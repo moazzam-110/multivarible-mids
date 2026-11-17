@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Multivariable Calculus – MCQ Workbook</title>
+<style>
+  :root {
+    --paper: #f4f6fa;
+    --grid: #e3e8f1;
+    --card: #ffffff;
+    --ink: #16213a;
+    --muted: #5d6a85;
+    --line: #d5dcea;
+    --accent: #2d4fd0;
+    --accent-soft: #e8edff;
+    --ok: #17803d;
+    --ok-bg: #dff5e6;
+    --ok-line: #5fbf80;
+    --bad: #c4262e;
+    --bad-bg: #fde4e5;
+    --bad-line: #ee8a90;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #0f1524; --grid: #172036; --card: #182036; --ink: #e8ecf6; --muted: #9aa7c4;
+      --line: #2a3553; --accent: #8ea6ff; --accent-soft: #212c52;
+      --ok: #6fe39a; --ok-bg: #16392a; --ok-line: #2f8f58;
+      --bad: #ff8d93; --bad-bg: #44191d; --bad-line: #a8444b;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: var(--sans);
+    color: var(--ink);
+    background-color: var(--paper);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 28px 28px;
+    line-height: 1.5;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 16px 56px; }
+
+  /* Header + score */
+  header.top { padding: 28px 0 14px; }
+  header.top h1 {
+    font-family: var(--serif);
+    font-size: clamp(1.6rem, 4.5vw, 2.3rem);
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+  }
+  header.top p { margin: 0; color: var(--muted); font-size: .95rem; }
+
+  .scorebar {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 16px 12px;
+    margin-bottom: 22px;
+    box-shadow: 0 6px 18px rgba(20, 33, 58, .08);
+  }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .stat { text-align: center; padding: 4px 2px; border-radius: 10px; }
+  .stat .num { font-family: var(--serif); font-size: clamp(1.5rem, 5vw, 2.1rem); font-weight: 700; line-height: 1.1; }
+  .stat .lbl { font-size: .75rem; color: var(--muted); }
+  .stat.correct .num { color: var(--ok); }
+  .stat.wrong .num { color: var(--bad); }
+  .stat.score .num { color: var(--accent); }
+  .progress-row { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
+  .progress { flex: 1; height: 8px; background: var(--grid); border-radius: 99px; overflow: hidden; }
+  .progress > span { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 99px; transition: width .3s ease; }
+  .progress-text { font-size: .8rem; color: var(--muted); white-space: nowrap; }
+
+  /* Sections + cards */
+  .section-title {
+    font-family: var(--serif);
+    font-size: 1.15rem;
+    margin: 30px 0 12px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--accent);
+    color: var(--accent);
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 18px 18px 16px;
+    margin-bottom: 14px;
+  }
+  .card .qhead { display: flex; gap: 12px; align-items: flex-start; }
+  .qnum {
+    flex: none;
+    min-width: 46px; height: 30px; padding: 0 8px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--accent-soft); color: var(--accent);
+    border-radius: 8px; font-weight: 700; font-size: .85rem;
+  }
+  .qtext { font-family: var(--serif); font-size: 1.12rem; line-height: 1.45; margin: 2px 0 0; overflow-wrap: anywhere; }
+  .concept { margin: 4px 0 0 58px; font-size: .78rem; color: var(--muted); }
+  .options { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 8px; }
+  .opt {
+    width: 100%;
+    display: flex; align-items: center; gap: 12px;
+    text-align: left;
+    font: inherit; color: inherit;
+    padding: 12px 14px;
+    min-height: 48px;
+    background: var(--card);
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: border-color .12s, background-color .12s;
+  }
+  .opt:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+  .opt:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .opt .letter {
+    flex: none; width: 28px; height: 28px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    border: 1.5px solid var(--line); font-weight: 700; font-size: .85rem; color: var(--muted);
+  }
+  .opt .otext { font-family: var(--serif); font-size: 1.05rem; overflow-wrap: anywhere; }
+  .opt:disabled { cursor: default; }
+  .opt.correct { background: var(--ok-bg); border-color: var(--ok-line); color: var(--ok); }
+  .opt.correct .letter { background: var(--ok); border-color: var(--ok); color: #fff; }
+  .opt.wrong { background: var(--bad-bg); border-color: var(--bad-line); color: var(--bad); }
+  .opt.wrong .letter { background: var(--bad); border-color: var(--bad); color: #fff; }
+  .verdict { margin: 12px 0 0; font-size: .88rem; font-weight: 600; }
+  .verdict.ok { color: var(--ok); }
+  .verdict.no { color: var(--bad); }
+  sub { font-size: .72em; line-height: 0; }
+
+  /* Pager + result */
+  .pager { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 24px 0 0; }
+  .pager .info { font-size: .95rem; color: var(--muted); text-align: center; }
+  .btn {
+    font: inherit; font-weight: 600;
+    padding: 11px 18px; min-height: 44px;
+    border-radius: 10px; border: 1.5px solid var(--accent);
+    background: var(--accent); color: #fff; cursor: pointer;
+  }
+  .btn:hover:not(:disabled) { filter: brightness(1.08); }
+  .btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+  .btn.ghost { background: transparent; color: var(--accent); }
+  .restart-row { text-align: center; margin-top: 18px; }
+
+  .result {
+    background: var(--card);
+    border: 2px solid var(--accent);
+    border-radius: 14px;
+    padding: 22px 18px;
+    margin: 0 0 22px;
+    text-align: center;
+  }
+  .result[hidden] { display: none; }
+  .result h2 { font-family: var(--serif); margin: 0 0 6px; font-size: 1.5rem; }
+  .result .pct { font-family: var(--serif); font-size: 3rem; font-weight: 700; color: var(--accent); line-height: 1.1; }
+  .result p { margin: 6px 0 0; color: var(--muted); }
+  .result .btn { margin-top: 14px; }
+
+  @media (max-width: 520px) {
+    .card { padding: 14px 12px; }
+    .concept { margin-left: 0; }
+    .pager .btn { padding: 10px 12px; }
+    .stat .lbl { font-size: .68rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .progress > span, .opt { transition: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>Multivariable Calculus: Practice MCQs</h1>
+    <p>Topic-based practice. Pick an option to see if you were right.</p>
+  </header>
+
+  <section class="scorebar" aria-label="Score">
+    <div class="stats">
+      <div class="stat"><div class="num" id="sTotal">0</div><div class="lbl">Total MCQs</div></div>
+      <div class="stat correct"><div class="num" id="sCorrect">0</div><div class="lbl">Correct</div></div>
+      <div class="stat wrong"><div class="num" id="sWrong">0</div><div class="lbl">Wrong</div></div>
+      <div class="stat score"><div class="num" id="sScore">0</div><div class="lbl">Current score</div></div>
+    </div>
+    <div class="progress-row">
+      <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progressBar"><span id="progressFill"></span></div>
+      <div class="progress-text" id="progressText">0 of 0 answered</div>
+    </div>
+  </section>
+
+  <section class="result" id="result" hidden aria-live="polite">
+    <h2>Quiz complete</h2>
+    <div class="pct" id="rPct">0%</div>
+    <p id="rText"></p>
+    <button class="btn" id="rRestart" type="button">Restart quiz</button>
+  </section>
+
+  <main id="quiz"></main>
+
+  <nav class="pager" aria-label="Pages">
+    <button class="btn ghost" id="prevBtn" type="button">Previous Page</button>
+    <div class="info" id="pageInfo">Page 1 of 1</div>
+    <button class="btn" id="nextBtn" type="button">Next Page</button>
+  </nav>
+
+  <div class="restart-row">
+    <button class="btn ghost" id="restartBtn" type="button">Restart Quiz</button>
+  </div>
+</div>
+
+<script>
+/* ------------------------------------------------------------------
+   MCQ DATA
+   To add more questions, append objects to this array.
+   Every 50 questions automatically become one page.
+   answer is one of "A", "B", "C", "D".
+------------------------------------------------------------------- */
+const MCQS = [
+  /* Section A: Functions of Several Variables */
+  { section: "Section A: Functions of Several Variables", concept: "Multivariable Function",
+    q: "A function of two variables is generally written as:",
+    options: ["f(x)", "f(x,y)", "f(x,y,z,w) only", "f(a)"], answer: "B" },
+  { section: "Section A: Functions of Several Variables", concept: "Domain of Multivariable Function",
+    q: "Find the domain of f(x,y) = √(x+y).",
+    options: ["x+y > 0", "x+y ≥ 0", "x+y ≤ 0", "All real numbers"], answer: "B" },
+  { section: "Section A: Functions of Several Variables", concept: "Range of a Function",
+    q: "If f(x,y) = x²+y², its range is:",
+    options: ["All real numbers", "y ≤ 0", "z ≥ 0", "z < 0"], answer: "C" },
+  { section: "Section A: Functions of Several Variables", concept: "Level Curves",
+    q: "The level curves of f(x,y) = x²+y² are:",
+    options: ["Straight lines", "Circles", "Parabolas", "Hyperbolas"], answer: "B" },
+  { section: "Section A: Functions of Several Variables", concept: "Multivariable Function Evaluation",
+    q: "If f(x,y) = 2x+3y, find f(1,2).",
+    options: ["5", "6", "8", "10"], answer: "C" },
+
+  /* Section B: Direct Limits */
+  { section: "Section B: Direct Limits", concept: "Direct Substitution Method",
+    q: "Evaluate: lim (x,y)→(1,2) (x+2y)",
+    options: ["3", "4", "5", "6"], answer: "C" },
+  { section: "Section B: Direct Limits", concept: "Direct Substitution Method",
+    q: "Evaluate: lim (x,y)→(2,1) (x²+y²)",
+    options: ["3", "4", "5", "6"], answer: "C" },
+  { section: "Section B: Direct Limits", concept: "Direct Limit of Polynomial Function",
+    q: "Evaluate: lim (x,y)→(1,3) (x²+xy+y²)",
+    options: ["10", "11", "12", "13"], answer: "D" },
+  { section: "Section B: Direct Limits", concept: "Direct Limit of Rational Function",
+    q: "Evaluate: lim (x,y)→(1,2) (x+y)/(x²+y²)",
+    options: ["1/2", "3/5", "2/5", "1"], answer: "B" },
+  { section: "Section B: Direct Limits", concept: "Direct Limit of Continuous Functions",
+    q: "If f(x,y) is continuous at (a,b), then:",
+    options: ["The limit does not exist.", "The limit equals f(a,b).", "The limit is always zero.", "The limit is always infinity."], answer: "B" },
+
+  /* Section C: Simultaneous Limits */
+  { section: "Section C: Simultaneous Limits", concept: "Simultaneous Limit",
+    q: "A simultaneous limit in two variables means:",
+    options: ["Only x approaches a value.", "Only y approaches a value.", "Both x and y approach their respective values.", "Neither variable changes."], answer: "C" },
+  { section: "Section C: Simultaneous Limits", concept: "Path Independence",
+    q: "For a two-variable limit to exist, its value must be:",
+    options: ["Different along different paths.", "The same along all paths of approach.", "Zero along every path.", "Infinite along every path."], answer: "B" },
+  { section: "Section C: Simultaneous Limits", concept: "Simultaneous Limit",
+    q: "Evaluate: lim (x,y)→(0,0) (3x+4y)",
+    options: ["3", "4", "7", "0"], answer: "D" },
+  { section: "Section C: Simultaneous Limits", concept: "Path Test",
+    q: "Consider f(x,y) = xy/(x²+y²). The limit as (x,y)→(0,0):",
+    options: ["Is 0", "Is 1", "Does not exist", "Is infinity"], answer: "C" },
+  { section: "Section C: Simultaneous Limits", concept: "Path Independence",
+    q: "If a function approaches two different values along two different paths, its limit:",
+    options: ["Exists", "Does not exist", "Is always zero", "Is always one"], answer: "B" },
+  { section: "Section C: Simultaneous Limits", concept: "Simultaneous Limit Using Paths",
+    q: "Consider f(x,y) = x²y/(x²+y²). The limit as (x,y)→(0,0) is:",
+    options: ["1", "0", "Does not exist", "Infinity"], answer: "B" },
+  { section: "Section C: Simultaneous Limits", concept: "Simultaneous Limit",
+    q: "Evaluate: lim (x,y)→(0,0) (x²+y²)/(1+x²+y²)",
+    options: ["0", "1", "2", "Does not exist"], answer: "A" },
+
+  /* Section D: Repeated Limits */
+  { section: "Section D: Repeated Limits", concept: "Repeated Limit",
+    q: "A repeated limit is calculated by:",
+    options: ["Approaching both variables only simultaneously.", "Taking one variable's limit first and then the other.", "Differentiating the function.", "Integrating the function."], answer: "B" },
+  { section: "Section D: Repeated Limits", concept: "Repeated Limit Order",
+    q: "In lim x→a [lim y→b f(x,y)], which variable's limit is calculated first?",
+    options: ["x", "y", "Both together", "Neither"], answer: "B" },
+  { section: "Section D: Repeated Limits", concept: "Repeated Limits",
+    q: "Evaluate: lim x→1 [lim y→2 (x+y)]",
+    options: ["1", "2", "3", "4"], answer: "C" },
+  { section: "Section D: Repeated Limits", concept: "Order of Repeated Limits",
+    q: "For a function of two variables, the two repeated limits:",
+    options: ["Must always be equal.", "May be different.", "Must always be zero.", "Never exist."], answer: "B" },
+  { section: "Section D: Repeated Limits", concept: "Repeated Limits",
+    q: "If both repeated limits exist and are equal, then:",
+    options: ["The simultaneous limit must always exist.", "The simultaneous limit may or may not exist.", "The function must be constant.", "The function must be discontinuous."], answer: "B" },
+
+  /* Section E: Continuity */
+  { section: "Section E: Continuity", concept: "Continuity of Multivariable Functions",
+    q: "A function is continuous at (a,b) if:",
+    options: ["The limit exists and equals the function value.", "The function value is always zero.", "The limit does not exist.", "The function is undefined."], answer: "A" },
+  { section: "Section E: Continuity", concept: "Continuity Condition",
+    q: "Which is the correct continuity condition?",
+    options: ["lim f(x,y) = 0", "lim f(x,y) = f(a,b)", "f(a,b) = ∞", "f(a,b) = 1 always"], answer: "B" },
+  { section: "Section E: Continuity", concept: "Polynomial Function Continuity",
+    q: "Polynomial functions of two variables are continuous:",
+    options: ["Only at the origin.", "Everywhere in their domain.", "Nowhere.", "Only when x = y."], answer: "B" },
+  { section: "Section E: Continuity", concept: "Continuity of Rational Functions",
+    q: "A rational function is continuous wherever:",
+    options: ["Its denominator is zero.", "Its denominator is nonzero.", "Its numerator is zero.", "Both numerator and denominator are zero."], answer: "B" },
+
+  /* Section F: Partial Derivatives */
+  { section: "Section F: Partial Derivatives", concept: "Partial Derivative with Respect to x",
+    q: "If f(x,y) = x²+3xy+y², find ∂f/∂x.",
+    options: ["2x+3y", "3x+2y", "2y+3x", "2x+2y"], answer: "A" },
+  { section: "Section F: Partial Derivatives", concept: "Partial Derivative with Respect to y",
+    q: "If f(x,y) = x²+4xy+5y², find ∂f/∂y.",
+    options: ["2x+4y", "4x+10y", "2x+5y", "x+10y"], answer: "B" },
+  { section: "Section F: Partial Derivatives", concept: "Partial Derivative",
+    q: "When differentiating with respect to x, the variable y is treated as:",
+    options: ["Zero", "One", "Constant", "Infinity"], answer: "C" },
+  { section: "Section F: Partial Derivatives", concept: "Partial Derivative of Constant",
+    q: "Find: ∂/∂x (7y)",
+    options: ["7", "y", "0", "7y"], answer: "C" },
+  { section: "Section F: Partial Derivatives", concept: "Partial Derivative of Power Function",
+    q: "Find: ∂/∂x (x³y²)",
+    options: ["3x²y²", "2x³y", "3x³y²", "x²y²"], answer: "A" },
+  { section: "Section F: Partial Derivatives", concept: "Partial Derivative of Exponential Function",
+    q: "Find: ∂/∂x (e^(xy))",
+    options: ["e^(xy)", "y e^(xy)", "x e^(xy)", "xy e^(xy)"], answer: "B" },
+  { section: "Section F: Partial Derivatives", concept: "Partial Derivative of Logarithmic Function",
+    q: "Find: ∂/∂x ln(x²+y²)",
+    options: ["1/(x²+y²)", "2x/(x²+y²)", "2y/(x²+y²)", "2x"], answer: "B" },
+  { section: "Section F: Partial Derivatives", concept: "Partial Derivative of Trigonometric Function",
+    q: "Find: ∂/∂x sin(xy)",
+    options: ["cos(xy)", "y cos(xy)", "x cos(xy)", "−y sin(xy)"], answer: "B" },
+  { section: "Section F: Partial Derivatives", concept: "Partial Derivative of Product",
+    q: "If f(x,y) = x²y+xy², find f<sub>x</sub>.",
+    options: ["2xy+y²", "x²+2xy", "2x+y", "2xy+2y"], answer: "A" },
+
+  /* Section G: Chain Rule */
+  { section: "Section G: Chain Rule", concept: "Chain Rule",
+    q: "The chain rule is used when:",
+    options: ["A function is composed of another function.", "A function is constant.", "A function has no variables.", "A function is always linear."], answer: "A" },
+  { section: "Section G: Chain Rule", concept: "Chain Rule",
+    q: "If z=x²+y², where x=t and y=2t, find dz/dt.",
+    options: ["2t", "4t", "10t", "8t"], answer: "C" },
+  { section: "Section G: Chain Rule", concept: "Chain Rule",
+    q: "If z=x²+y², where x=2t and y=3t, find dz/dt.",
+    options: ["10t", "13t", "26t", "12t"], answer: "C" },
+  { section: "Section G: Chain Rule", concept: "Chain Rule Formula",
+    q: "If z=f(x,y), and x and y depend on t, then:",
+    options: ["dz/dt = f<sub>x</sub>+f<sub>y</sub>", "dz/dt = f<sub>x</sub>(dx/dt)+f<sub>y</sub>(dy/dt)", "dz/dt = f<sub>x</sub>f<sub>y</sub>", "dz/dt = 0"], answer: "B" },
+  { section: "Section G: Chain Rule", concept: "Chain Rule",
+    q: "If z=x²+y², x=t², and y=t, find dz/dt.",
+    options: ["4t³+2t", "2t²+2t", "4t+2", "2t³+t"], answer: "A" },
+
+  /* Section H: Second Order Derivatives */
+  { section: "Section H: Second Order Derivatives", concept: "Second Order Partial Derivative",
+    q: "A second-order partial derivative is obtained by:",
+    options: ["Integrating twice.", "Differentiating a first-order partial derivative again.", "Adding two functions.", "Dividing the function by two."], answer: "B" },
+  { section: "Section H: Second Order Derivatives", concept: "Second Partial Derivative with Respect to x",
+    q: "If f(x,y)=x³+y², find f<sub>xx</sub>.",
+    options: ["3x²", "6x", "2y", "6x²"], answer: "B" },
+  { section: "Section H: Second Order Derivatives", concept: "Second Partial Derivative with Respect to y",
+    q: "If f(x,y)=x²+4y³, find f<sub>yy</sub>.",
+    options: ["12y", "4y²", "24y", "24y²"], answer: "C" },
+  { section: "Section H: Second Order Derivatives", concept: "Mixed Partial Derivative",
+    q: "If f(x,y)=x²y³, find f<sub>xy</sub>.",
+    options: ["6xy²", "6x²y", "2xy³", "3x²y²"], answer: "A" },
+  { section: "Section H: Second Order Derivatives", concept: "Mixed Partial Derivatives",
+    q: "For a sufficiently smooth function, Clairaut's theorem states:",
+    options: ["f<sub>xx</sub>=f<sub>yy</sub>", "f<sub>xy</sub>=f<sub>yx</sub>", "f<sub>x</sub>=f<sub>y</sub>", "f<sub>xx</sub>=f<sub>xy</sub>"], answer: "B" },
+
+  /* Section I: Rules and Formulas of Derivatives */
+  { section: "Section I: Rules and Formulas of Derivatives", concept: "Power Rule",
+    q: "Differentiate: d/dx (x⁵)",
+    options: ["5x⁴", "4x⁵", "x⁴", "5x⁵"], answer: "A" },
+  { section: "Section I: Rules and Formulas of Derivatives", concept: "Product Rule",
+    q: "The product rule is:",
+    options: ["u'v'", "uv'+vu'", "u'v−uv'", "u'/v'"], answer: "B" },
+  { section: "Section I: Rules and Formulas of Derivatives", concept: "Quotient Rule",
+    q: "The quotient rule for u/v is:",
+    options: ["(u'v−uv')/v²", "(u'v+uv')/v²", "u'v'", "u/v²"], answer: "A" },
+  { section: "Section I: Rules and Formulas of Derivatives", concept: "Derivative of Exponential Function",
+    q: "Find: d/dx (eˣ)",
+    options: ["xeˣ", "eˣ", "e^(x−1)", "0"], answer: "B" },
+  { section: "Section I: Rules and Formulas of Derivatives", concept: "Derivative of Trigonometric Function",
+    q: "Find: d/dx (cos x)",
+    options: ["sin x", "cos x", "−sin x", "−cos x"], answer: "C" }
+];
+
+/* ------------------------------------------------------------------
+   APP LOGIC
+------------------------------------------------------------------- */
+const PAGE_SIZE = 50;
+const LETTERS = ["A", "B", "C", "D"];
+const STORE_KEY = "mvc-mcq-workbook-v1";
+const TOTAL = MCQS.length;
+const TOTAL_PAGES = Math.max(1, Math.ceil(TOTAL / PAGE_SIZE));
+
+let answers = {};   // { questionIndex: "A" | "B" | "C" | "D" }
+let page = 0;       // zero-based
+
+const $ = (id) => document.getElementById(id);
+const quizEl = $("quiz");
+
+/* Saved state (survives reloads; falls back silently if storage is blocked) */
+function save() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify({ answers, page })); } catch (e) {}
+}
+function load() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    if (data && data.answers && typeof data.answers === "object") {
+      Object.keys(data.answers).forEach((k) => {
+        const i = Number(k);
+        if (Number.isInteger(i) && i >= 0 && i < TOTAL && LETTERS.includes(data.answers[k])) {
+          answers[i] = data.answers[k];
+        }
+      });
+    }
+    if (Number.isInteger(data.page) && data.page >= 0 && data.page < TOTAL_PAGES) page = data.page;
+  } catch (e) {}
+}
+function clearSaved() {
+  try { localStorage.removeItem(STORE_KEY); } catch (e) {}
+}
+
+/* Score is always derived from the answers map, so a question can only count once */
+function tally() {
+  let correct = 0, wrong = 0;
+  Object.keys(answers).forEach((k) => {
+    if (answers[k] === MCQS[k].answer) correct++; else wrong++;
+  });
+  return { correct, wrong, answered: correct + wrong };
+}
+
+function updateScore() {
+  const t = tally();
+  $("sTotal").textContent = TOTAL;
+  $("sCorrect").textContent = t.correct;
+  $("sWrong").textContent = t.wrong;
+  $("sScore").textContent = t.correct;
+  const pct = TOTAL ? Math.round((t.answered / TOTAL) * 100) : 0;
+  $("progressFill").style.width = pct + "%";
+  $("progressBar").setAttribute("aria-valuenow", pct);
+  $("progressText").textContent = t.answered + " of " + TOTAL + " answered";
+
+  const done = TOTAL > 0 && t.answered === TOTAL;
+  $("result").hidden = !done;
+  if (done) {
+    const p = Math.round((t.correct / TOTAL) * 100);
+    $("rPct").textContent = p + "%";
+    $("rText").textContent = "You scored " + t.correct + " out of " + TOTAL + ". Correct: " + t.correct + ". Wrong: " + t.wrong + ".";
+  }
+}
+
+function renderPage() {
+  const start = page * PAGE_SIZE;
+  const end = Math.min(start + PAGE_SIZE, TOTAL);
+  quizEl.innerHTML = "";
+  let lastSection = null;
+
+  for (let i = start; i < end; i++) {
+    const m = MCQS[i];
+    if (m.section && m.section !== lastSection) {
+      const h = document.createElement("h2");
+      h.className = "section-title";
+      h.textContent = m.section;
+      quizEl.appendChild(h);
+      lastSection = m.section;
+    }
+
+    const card = document.createElement("article");
+    card.className = "card";
+    card.dataset.index = i;
+
+    const chosen = answers[i];
+    let html = '<div class="qhead"><span class="qnum">Q' + (i + 1) + '</span><p class="qtext">' + m.q + '</p></div>';
+    if (m.concept) html += '<p class="concept">Concept: ' + m.concept + '</p>';
+    html += '<ul class="options">';
+    m.options.forEach((opt, k) => {
+      const L = LETTERS[k];
+      let cls = "opt";
+      if (chosen) {
+        if (L === m.answer) cls += " correct";
+        else if (L === chosen) cls += " wrong";
+      }
+      html += '<li><button type="button" class="' + cls + '" data-q="' + i + '" data-l="' + L + '"' +
+              (chosen ? " disabled" : "") + '><span class="letter">' + L + '</span><span class="otext">' + opt + '</span></button></li>';
+    });
+    html += "</ul>";
+    if (chosen) {
+      html += chosen === m.answer
+        ? '<p class="verdict ok">Correct.</p>'
+        : '<p class="verdict no">Not quite. The correct answer is ' + m.answer + '.</p>';
+    }
+    card.innerHTML = html;
+    quizEl.appendChild(card);
+  }
+
+  $("pageInfo").textContent = "Page " + (page + 1) + " of " + TOTAL_PAGES;
+  $("prevBtn").disabled = page === 0;
+  $("nextBtn").disabled = page >= TOTAL_PAGES - 1;
+  document.querySelector(".pager").style.display = TOTAL_PAGES > 1 ? "flex" : "none";
+}
+
+function goTop() { window.scrollTo({ top: 0 }); }
+
+function choose(qIndex, letter) {
+  if (answers[qIndex]) return;            // already answered: locked
+  answers[qIndex] = letter;
+  save();
+  // Update only this card so the scroll position stays put
+  const card = quizEl.querySelector('.card[data-index="' + qIndex + '"]');
+  const m = MCQS[qIndex];
+  card.querySelectorAll(".opt").forEach((btn) => {
+    const L = btn.dataset.l;
+    btn.disabled = true;
+    if (L === m.answer) btn.classList.add("correct");
+    else if (L === letter) btn.classList.add("wrong");
+  });
+  const v = document.createElement("p");
+  v.className = "verdict " + (letter === m.answer ? "ok" : "no");
+  v.textContent = letter === m.answer ? "Correct." : "Not quite. The correct answer is " + m.answer + ".";
+  card.appendChild(v);
+  updateScore();
+}
+
+function restart() {
+  if (Object.keys(answers).length > 0 &&
+      !window.confirm("Restart the quiz? All your answers and your score will be cleared.")) return;
+  answers = {};
+  page = 0;
+  clearSaved();
+  renderPage();
+  updateScore();
+  goTop();
+}
+
+quizEl.addEventListener("click", (e) => {
+  const btn = e.target.closest(".opt");
+  if (!btn || btn.disabled) return;
+  choose(Number(btn.dataset.q), btn.dataset.l);
+});
+$("prevBtn").addEventListener("click", () => { if (page > 0) { page--; save(); renderPage(); goTop(); } });
+$("nextBtn").addEventListener("click", () => { if (page < TOTAL_PAGES - 1) { page++; save(); renderPage(); goTop(); } });
+$("restartBtn").addEventListener("click", restart);
+$("rRestart").addEventListener("click", restart);
+
+load();
+renderPage();
+updateScore();
+</script>
+</body>
+</html>
